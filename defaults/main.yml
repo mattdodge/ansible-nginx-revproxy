@@ -8,7 +8,9 @@ nginx_revproxy_sites:                                         # List of sites to
     upstreams:                                                # List of Upstreams
       - { backend_address: 192.168.0.100, backend_port: 80 }
       - { backend_address: 192.168.0.101, backend_port: 8080 }
+    redirect: false                                           # Set to the domain to redirect to if you want a 301 redirect
     ssl: true                                                 # Set to True if you want to redirect http to https
     hsts_max_age: 63072000                                    # Set HSTS header with max-age defined
     letsencrypt: false                                        # Set to True if you want use letsencrypt
     letsencrypt_email: ""                                     # Set email for letencrypt cert
+

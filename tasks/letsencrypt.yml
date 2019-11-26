@@ -31,6 +31,20 @@
       when:
         - item.value.letsencrypt | default(False)
         - item.key not in active.stdout_lines
+        - not (item.value.redirect | default(False))
+
+    - name: Add Redirect Https Site Config
+      template:
+        src: redirect_ssl.conf.j2
+        dest: /etc/nginx/sites-available/{{ item.key }}.conf
+        owner: root
+        group: root
+      with_dict: "{{ nginx_revproxy_sites }}"
+      register: siteconfig
+      when:
+        - item.value.letsencrypt | default(False)
+        - item.key not in active.stdout_lines
+        - item.value.redirect | default(False)
 
     - name: Enable Site Config
       file:
@@ -82,6 +96,22 @@
   notify: Reload Nginx
   when:
     - item.value.letsencrypt | default(False)
+    - not item.value.redirect | default(True)
+  tags:
+    - lesencrypt
+    - nginxrevproxy
+
+- name: Update Redirect Site Config
+  template:
+    src: redirect_ssl_letsencrypt.conf.j2
+    dest: /etc/nginx/sites-available/{{ item.key }}.conf
+    owner: root
+    group: root
+  with_dict: "{{ nginx_revproxy_sites }}"
+  notify: Reload Nginx
+  when:
+    - item.value.letsencrypt | default(False)
+    - item.value.redirect | default(False)
   tags:
     - lesencrypt
     - nginxrevproxy
